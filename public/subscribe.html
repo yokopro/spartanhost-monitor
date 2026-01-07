@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮件订阅管理 - 斯巴达VPS监控</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+        }
+        
+        h1 {
+            font-size: 48px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 21px;
+            color: #6e6e73;
+        }
+        
+        .nav {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .nav a {
+            color: #0071e3;
+            text-decoration: none;
+            font-size: 17px;
+        }
+        
+        .nav a:hover {
+            text-decoration: underline;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+        
+        .card h2 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1d1d1f;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+        }
+        
+        input[type="email"],
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 17px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #0071e3;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+        
+        .btn {
+            background: #0071e3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #0077ed;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #6e6e73;
+        }
+        
+        .btn-secondary:hover {
+            background: #86868b;
+        }
+        
+        .btn-danger {
+            background: #ff3b30;
+        }
+        
+        .btn-danger:hover {
+            background: #ff453a;
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        
+        .subscribers-list {
+            margin-top: 20px;
+        }
+        
+        .subscriber-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+        
+        .subscriber-item:hover {
+            border-color: #0071e3;
+            box-shadow: 0 2px 8px rgba(0,113,227,0.1);
+        }
+        
+        .subscriber-info {
+            flex: 1;
+        }
+        
+        .subscriber-email {
+            font-size: 17px;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+        }
+        
+        .subscriber-meta {
+            font-size: 14px;
+            color: #6e6e73;
+        }
+        
+        .subscriber-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .badge-active {
+            background: #d1f4e0;
+            color: #007a3d;
+        }
+        
+        .badge-inactive {
+            background: #ffeaea;
+            color: #c41e3a;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: 600;
+            color: #0071e3;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #6e6e73;
+        }
+        
+        .message {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+        
+        .message-success {
+            background: #d1f4e0;
+            color: #007a3d;
+            border-left: 4px solid #007a3d;
+        }
+        
+        .message-error {
+            background: #ffeaea;
+            color: #c41e3a;
+            border-left: 4px solid #c41e3a;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6e6e73;
+        }
+        
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        
+        .helper-text {
+            font-size: 14px;
+            color: #6e6e73;
+            margin-top: 8px;
+        }
+        
+        @media (max-width: 734px) {
+            h1 {
+                font-size: 36px;
+            }
+            
+            .subscriber-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .subscriber-actions {
+                width: 100%;
+            }
+            
+            .subscriber-actions button {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📧 邮件订阅管理</h1>
+            <p class="subtitle">管理补货通知的邮件订阅列表</p>
+        </header>
+        
+        <div class="nav">
+            <a href="/">← 返回监控页面</a>
+        </div>
+        
+        <div id="message"></div>
+        
+        <!-- 统计卡片 -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalSubscribers">0</div>
+                <div class="stat-label">总订阅数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeSubscribers">0</div>
+                <div class="stat-label">活跃订阅</div>
+            </div>
+        </div>
+        
+        <!-- 添加订阅者 -->
+        <div class="card">
+            <h2>添加订阅者</h2>
+            <form id="addSubscriberForm">
+                <div class="form-group">
+                    <label for="email">邮箱地址 *</label>
+                    <input type="email" id="email" name="email" required placeholder="example@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="name">姓名（可选）</label>
+                    <input type="text" id="name" name="name" placeholder="张三">
+                    <div class="helper-text">如果不填写，将使用邮箱前缀作为姓名</div>
+                </div>
+                <button type="submit" class="btn">添加订阅</button>
+            </form>
+        </div>
+        
+        <!-- 批量导入 -->
+        <div class="card">
+            <h2>批量导入</h2>
+            <form id="importForm">
+                <div class="form-group">
+                    <label for="emailList">邮箱列表（每行一个）</label>
+                    <textarea id="emailList" name="emailList" placeholder="example1@email.com&#10;example2@email.com&#10;example3@email.com"></textarea>
+                    <div class="helper-text">每行输入一个邮箱地址，支持批量导入</div>
+                </div>
+                <button type="submit" class="btn btn-secondary">批量导入</button>
+            </form>
+        </div>
+        
+        <!-- 订阅者列表 -->
+        <div class="card">
+            <h2>订阅者列表</h2>
+            <div id="subscribersList" class="subscribers-list">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <p>暂无订阅者</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // 管理员密码（存储在浏览器）
+    let adminPassword = localStorage.getItem('adminPassword');
+    let isAuthenticated = false;
+    
+    // 显示消息
+    function showMessage(message, type = 'success') {
+        const messageDiv = document.getElementById('message');
+        messageDiv.className = `message message-${type}`;
+        messageDiv.textContent = message;
+        messageDiv.style.display = 'block';
+        
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 5000);
+    }
+    
+    // 验证密码
+    async function verifyPassword(password) {
+        try {
+            const response = await fetch('/api/subscribers', {
+                headers: {
+                    'X-Admin-Password': password
+                }
+            });
+            return response.ok;
+        } catch (error) {
+            return false;
+        }
+    }
+    
+    // 显示登录表单
+    function showLoginForm() {
+        const container = document.getElementById('subscribersList');
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px;">
+                <div style="font-size: 48px; margin-bottom: 20px;">🔒</div>
+                <h3 style="margin-bottom: 20px; color: #1d1d1f;">订阅者列表需要密码访问</h3>
+                <div style="max-width: 300px; margin: 0 auto;">
+                    <input type="password" id="passwordInput" placeholder="请输入管理员密码" 
+                           style="width: 100%; padding: 12px 16px; font-size: 17px; border: 1px solid #d2d2d7; border-radius: 8px; margin-bottom: 12px;">
+                    <button onclick="handleLogin()" class="btn" style="width: 100%;">解锁查看</button>
+                </div>
+            </div>
+        `;
+    }
+    
+    // 处理登录
+    async function handleLogin() {
+        const password = document.getElementById('passwordInput').value;
+        
+        if (!password) {
+            showMessage('请输入密码', 'error');
+            return;
+        }
+        
+        const isValid = await verifyPassword(password);
+        
+        if (isValid) {
+            adminPassword = password;
+            localStorage.setItem('adminPassword', password);
+            isAuthenticated = true;
+            showMessage('验证成功', 'success');
+            loadSubscribers();
+        } else {
+            showMessage('密码错误', 'error');
+            document.getElementById('passwordInput').value = '';
+        }
+    }
+    
+    // 退出登录
+    function logout() {
+        if (confirm('确定要退出登录吗？')) {
+            localStorage.removeItem('adminPassword');
+            adminPassword = null;
+            isAuthenticated = false;
+            showMessage('已退出登录', 'success');
+            showLoginForm();
+        }
+    }
+    
+    // 加载订阅者列表
+    async function loadSubscribers() {
+        // 如果没有密码，显示登录表单
+        if (!adminPassword) {
+            showLoginForm();
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/subscribers', {
+                headers: {
+                    'X-Admin-Password': adminPassword
+                }
+            });
+            
+            if (response.status === 401) {
+                // 密码错误，清除并重新登录
+                localStorage.removeItem('adminPassword');
+                adminPassword = null;
+                isAuthenticated = false;
+                showMessage('密码已失效，请重新登录', 'error');
+                showLoginForm();
+                return;
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                isAuthenticated = true;
+                renderSubscribers(data.subscribers);
+                updateStats(data.subscribers);
+            }
+        } catch (error) {
+            showMessage('加载订阅者失败: ' + error.message, 'error');
+        }
+    }
+    
+    // 渲染订阅者列表
+    function renderSubscribers(subscribers) {
+        const container = document.getElementById('subscribersList');
+        
+        if (subscribers.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: right; margin-bottom: 12px;">
+                    <button onclick="logout()" class="btn btn-small btn-secondary">🚪 退出登录</button>
+                </div>
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <p>暂无订阅者</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = `
+            <div style="text-align: right; margin-bottom: 12px;">
+                <button onclick="logout()" class="btn btn-small btn-secondary">🚪 退出登录</button>
+            </div>
+        ` + subscribers.map(sub => `
+            <div class="subscriber-item">
+                <div class="subscriber-info">
+                    <div class="subscriber-email">
+                        ${sub.email}
+                        <span class="badge ${sub.active ? 'badge-active' : 'badge-inactive'}">
+                            ${sub.active ? '活跃' : '已停用'}
+                        </span>
+                    </div>
+                    <div class="subscriber-meta">
+                        ${sub.name} · 订阅于 ${new Date(sub.subscribedAt).toLocaleString('zh-CN')}
+                    </div>
+                </div>
+                <div class="subscriber-actions">
+                    <button class="btn btn-small btn-secondary" onclick="toggleActive(${sub.id}, ${!sub.active})">
+                        ${sub.active ? '停用' : '启用'}
+                    </button>
+                    <button class="btn btn-small btn-danger" onclick="deleteSubscriber(${sub.id})">
+                        删除
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // 更新统计
+    function updateStats(subscribers) {
+        document.getElementById('totalSubscribers').textContent = subscribers.length;
+        document.getElementById('activeSubscribers').textContent = 
+            subscribers.filter(s => s.active).length;
+    }
+    
+    // 添加订阅者（不需要密码）
+    document.getElementById('addSubscriberForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const data = {
+            email: formData.get('email'),
+            name: formData.get('name')
+        };
+        
+        try {
+            // 添加订阅不需要密码
+            const response = await fetch('/api/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showMessage('订阅成功！', 'success');
+                e.target.reset();
+                if (isAuthenticated) {
+                    loadSubscribers();
+                }
+            } else {
+                showMessage(result.message, 'error');
+            }
+        } catch (error) {
+            showMessage('添加失败: ' + error.message, 'error');
+        }
+    });
+    
+    // 批量导入（不需要密码）
+    document.getElementById('importForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const emailList = document.getElementById('emailList').value;
+        const emails = emailList.split('\n').map(e => e.trim()).filter(e => e);
+        
+        if (emails.length === 0) {
+            showMessage('请输入至少一个邮箱地址', 'error');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/subscribers/import', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ emails })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showMessage(result.message, 'success');
+                document.getElementById('emailList').value = '';
+                if (isAuthenticated) {
+                    loadSubscribers();
+                }
+                
+                if (result.skipped.length > 0) {
+                    console.log('跳过的邮箱:', result.skipped);
+                }
+            } else {
+                showMessage(result.message, 'error');
+            }
+        } catch (error) {
+            showMessage('导入失败: ' + error.message, 'error');
+        }
+    });
+    
+    // 切换启用/停用（需要密码）
+    async function toggleActive(id, active) {
+        if (!adminPassword) {
+            showMessage('需要管理员权限', 'error');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/subscribe/${id}`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Admin-Password': adminPassword
+                },
+                body: JSON.stringify({ active })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showMessage(active ? '已启用' : '已停用', 'success');
+                loadSubscribers();
+            } else {
+                showMessage(result.message, 'error');
+            }
+        } catch (error) {
+            showMessage('操作失败: ' + error.message, 'error');
+        }
+    }
+    
+    // 删除订阅者（需要密码）
+    async function deleteSubscriber(id) {
+        if (!adminPassword) {
+            showMessage('需要管理员权限', 'error');
+            return;
+        }
+        
+        if (!confirm('确定要删除这个订阅者吗？')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/subscribe/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-Admin-Password': adminPassword
+                }
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showMessage('删除成功', 'success');
+                loadSubscribers();
+            } else {
+                showMessage(result.message, 'error');
+            }
+        } catch (error) {
+            showMessage('删除失败: ' + error.message, 'error');
+        }
+    }
+    
+    // 页面加载时尝试加载订阅者列表
+    loadSubscribers();
+</script>
+</body>
+</html>
