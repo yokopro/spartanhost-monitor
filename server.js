@@ -79,7 +79,7 @@ const axiosInstance = axios.create({
 
 // 检查单个产品
 async function checkProductStock(productId) {
-    const url = `https://billing.spartanhost.net/cart.php?a=add&pid=${productId}`;
+    const url = `https://billing.spartanhost.net/aff.php?aff=2704&pid=${productId}`;
     console.log(`正在检查产品 ${productId}...`);
     
     try {
