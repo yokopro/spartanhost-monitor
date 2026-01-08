@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斯巴达VPS补货监控</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.47059;
+            font-weight: 400;
+            letter-spacing: -0.022em;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 60px 20px 40px;
+        }
+        
+        h1 {
+            font-size: 56px;
+            line-height: 1.07143;
+            font-weight: 600;
+            letter-spacing: -0.005em;
+            color: #1d1d1f;
+            margin-bottom: 12px;
+        }
+        
+        .subtitle {
+            font-size: 21px;
+            line-height: 1.381;
+            font-weight: 400;
+            letter-spacing: 0.011em;
+            color: #6e6e73;
+            margin-bottom: 20px;
+        }
+        
+        .manage-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #0071e3;
+            text-decoration: none;
+            font-size: 17px;
+            transition: color 0.3s;
+        }
+        
+        .manage-link:hover {
+            color: #0077ed;
+            text-decoration: underline;
+        }
+        
+        .header-info {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+        
+        .info-item {
+            font-size: 14px;
+            color: #6e6e73;
+            font-weight: 400;
+        }
+        
+        .info-item strong {
+            color: #1d1d1f;
+            font-weight: 600;
+        }
+        
+        /* 控制按钮 */
+        .controls {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        
+        .btn {
+            background: #0071e3;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 980px;
+            font-size: 17px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: -0.022em;
+            min-width: 120px;
+        }
+        
+        .btn:hover {
+            background: #0077ed;
+            transform: scale(1.02);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+        
+        /* 分类卡片 */
+        .category {
+            background: #fff;
+            border-radius: 18px;
+            padding: 40px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .category:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+        
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #d2d2d7;
+        }
+        
+        .category-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1d1d1f;
+            letter-spacing: -0.005em;
+        }
+        
+        .category-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+        }
+        
+        .stat {
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .stat.in-stock {
+            background: #d1f4e0;
+            color: #007a3d;
+        }
+        
+        .stat.out-of-stock {
+            background: #ffeaea;
+            color: #c41e3a;
+        }
+        
+        /* 产品网格 */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .product-card {
+            background: #fbfbfd;
+            border: 1px solid #d2d2d7;
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .product-card:hover {
+            border-color: #0071e3;
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .product-name {
+            font-size: 19px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+            letter-spacing: -0.022em;
+        }
+        
+        .product-id {
+            font-size: 14px;
+            color: #86868b;
+            margin-bottom: 16px;
+        }
+        
+        .product-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+        
+        .in-stock {
+            background: #d1f4e0;
+            color: #007a3d;
+        }
+        
+        .out-of-stock {
+            background: #ffeaea;
+            color: #c41e3a;
+        }
+        
+        .checking, .unknown, .error {
+            background: #fff4e5;
+            color: #f56300;
+        }
+        
+        .product-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 16px;
+            color: #0071e3;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            transition: all 0.2s ease;
+        }
+        
+        .product-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* 加载动画 */
+        .loading {
+            text-align: center;
+            color: #6e6e73;
+            font-size: 17px;
+            padding: 80px 20px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 20px;
+            border: 2px solid #d2d2d7;
+            border-top: 2px solid #0071e3;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 消息提示 */
+        .error-message, .success-message {
+            background: #fff;
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .error-message {
+            border-left-color: #c41e3a;
+            color: #c41e3a;
+        }
+        
+        .success-message {
+            border-left-color: #007a3d;
+            color: #007a3d;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1068px) {
+            h1 {
+                font-size: 48px;
+            }
+            
+            .category-title {
+                font-size: 28px;
+            }
+        }
+        
+        @media (max-width: 734px) {
+            h1 {
+                font-size: 40px;
+            }
+            
+            .subtitle {
+                font-size: 19px;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-info {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .category-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .category {
+                padding: 24px;
+            }
+            
+            .category-title {
+                font-size: 24px;
+            }
+        }
+        
+        /* 滚动条 */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f5f5f7;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #d2d2d7;
+            border-radius: 6px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b0b0b5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>斯巴达VPS补货监控</h1>
+            <p class="subtitle">实时监控库存状态，第一时间掌握补货信息</p>
+            
+            <a href="/subscribe.html" class="manage-link">📧 邮件订阅管理 →</a>
+            
+            <div class="header-info">
+                <div class="info-item">
+                    最后更新 <strong id="lastUpdate">加载中...</strong>
+                </div>
+                <div class="info-item">
+                    下次检查 <strong id="nextCheck">--:--</strong>
+                </div>
+                <div class="info-item">
+                    监控产品 <strong id="totalProducts">0</strong> 个
+                </div>
+            </div>
+        </header>
+        
+        <div class="controls">
+            <button class="btn" id="manualCheck">立即检查</button>
+        </div>
+        
+        <div id="message"></div>
+        <div id="content" class="loading">
+            <div class="spinner"></div>
+            <p>正在加载数据...</p>
+        </div>
+    </div>
+
+    <script>
+        let countdown;
+        
+        async function fetchStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                if (data.error) {
+                    showMessage(data.error, 'error');
+                    return;
+                }
+                
+                renderProducts(data);
+                updateTime(data.lastCheck);
+                
+                if (data.lastCheck) {
+                    const nextCheckTime = new Date(data.lastCheck).getTime() + 2 * 60 * 1000;
+                    const now = Date.now();
+                    const remainingSeconds = Math.max(0, Math.floor((nextCheckTime - now) / 1000));
+                    startCountdown(remainingSeconds);
+                }
+            } catch (error) {
+                showMessage('获取数据失败: ' + error.message, 'error');
+            }
+        }
+        
+        function renderProducts(data) {
+            const content = document.getElementById('content');
+            content.className = '';
+            content.innerHTML = '';
+            
+            if (!data.products || data.products.length === 0) {
+                content.innerHTML = '<div class="loading"><div class="spinner"></div><p>暂无产品数据，请等待首次检查完成</p></div>';
+                return;
+            }
+            
+            document.getElementById('totalProducts').textContent = data.products.length;
+            
+            // 自动提取所有分类
+            const allCategories = [...new Set(data.products.map(p => p.category))];
+            
+            const categories = {};
+            allCategories.forEach(category => {
+                categories[category] = data.products.filter(p => p.category === category);
+            });
+            
+            // 渲染每个分类
+            for (const [categoryName, products] of Object.entries(categories)) {
+                if (products.length === 0) continue;
+                
+                const inStockCount = products.filter(p => p.status === 'in_stock').length;
+                const outOfStockCount = products.filter(p => p.status === 'out_of_stock').length;
+                const errorCount = products.filter(p => p.status === 'error').length;
+                
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                categoryDiv.innerHTML = `
+                    <div class="category-header">
+                        <h2 class="category-title">${escapeHtml(categoryName)}</h2>
+                        <div class="category-stats">
+                            <span class="stat in-stock">有货 ${inStockCount}</span>
+                            <span class="stat out-of-stock">缺货 ${outOfStockCount}</span>
+                            ${errorCount > 0 ? `<span class="stat" style="background: #fff4e5; color: #f56300;">错误 ${errorCount}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="products-grid">
+                        ${products.map(product => `
+                            <div class="product-card">
+                                <div class="product-name">${escapeHtml(product.name)}</div>
+                                <div class="product-id">产品ID ${product.id}</div>
+                                <div class="product-status ${getStatusClass(product.status)}">
+                                    ${getStatusText(product.status)}
+                                </div>
+                                <a href="${product.url}" target="_blank" class="product-link">
+                                    查看详情 →
+                                </a>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                content.appendChild(categoryDiv);
+            }
+        }
+        
+        function getStatusClass(status) {
+            switch(status) {
+                case 'in_stock': return 'in-stock';
+                case 'out_of_stock': return 'out-of-stock';
+                case 'checking': return 'checking';
+                case 'unknown': return 'unknown';
+                case 'error': return 'error';
+                default: return 'unknown';
+            }
+        }
+        
+        function getStatusText(status) {
+            switch(status) {
+                case 'in_stock': return '有货';
+                case 'out_of_stock': return '缺货';
+                case 'checking': return '检查中';
+                case 'unknown': return '未知';
+                case 'error': return '错误';
+                default: return '未知';
+            }
+        }
+        
+        function updateTime(lastCheck) {
+            if (!lastCheck) {
+                document.getElementById('lastUpdate').textContent = '从未检查';
+                return;
+            }
+            const date = new Date(lastCheck);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+            
+            if (diff < 60) {
+                document.getElementById('lastUpdate').textContent = '刚刚';
+            } else if (diff < 3600) {
+                document.getElementById('lastUpdate').textContent = `${Math.floor(diff / 60)} 分钟前`;
+            } else {
+                document.getElementById('lastUpdate').textContent = date.toLocaleString('zh-CN', {
+                    month: 'numeric',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        }
+        
+        function startCountdown(seconds) {
+            if (countdown) clearInterval(countdown);
+            
+            let remaining = seconds;
+            updateCountdown(remaining);
+            
+            countdown = setInterval(() => {
+                remaining--;
+                if (remaining <= 0) {
+                    clearInterval(countdown);
+                    document.getElementById('nextCheck').textContent = '检查中...';
+                    setTimeout(fetchStatus, 1000);
+                } else {
+                    updateCountdown(remaining);
+                }
+            }, 1000);
+        }
+        
+        function updateCountdown(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            document.getElementById('nextCheck').textContent = 
+                `${minutes}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function showMessage(message, type = 'error') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // 手动检查按钮
+        document.getElementById('manualCheck').addEventListener('click', async function() {
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = '检查中...';
+            
+            try {
+                const response = await fetch('/api/check');
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('检查任务已启动，请稍候', 'success');
+                    setTimeout(fetchStatus, 5000);
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('触发检查失败: ' + error.message, 'error');
+            } finally {
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = '立即检查';
+                }, 3000);
+            }
+        });
+        
+        // 初始加载
+        fetchStatus();
+        
+        // 每30秒刷新一次
+        setInterval(fetchStatus, 30000);
+    </script>
+</body>
+</html>
