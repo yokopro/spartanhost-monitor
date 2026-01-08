@@ -181,7 +181,7 @@ async function checkAllProducts() {
             name: product.name,
             category: product.category,
             status: status,
-            url: `https://billing.spartanhost.net/cart.php?a=add&pid=${product.id}`,
+            url: `https://billing.spartanhost.net/aff.php?aff=2704&pid=${product.id}`,
             lastCheck: new Date().toISOString()
         };
         
