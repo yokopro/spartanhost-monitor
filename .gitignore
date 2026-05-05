@@ -2,7 +2,6 @@
 node_modules/
 
 # 隐私与配置
-config.js
 .env
 .env.local
 
