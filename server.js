@@ -12,21 +12,34 @@ const PORT = process.env.PORT || 3000;
 
 // ⚠️ 在这里配置你的产品（需要修改）
 const PRODUCTS = [ 
-    // 9929+CMIN2 分类
-    { id: 426, name: '4C-4G-100GB', category: '9929+CMIN2' }, 
-    { id: 427, name: '4C-6G-150GB', category: '9929+CMIN2' }, 
-    { id: 428, name: '5C-8G-200GB', category: '9929+CMIN2' }, 
-    { id: 429, name: '5C-10G-250GB', category: '9929+CMIN2' }, 
+    // 顶级优化9929 分类
+    { id: 426, name: '4C-4G-100GB', category: 'AS9929-CMIN2 Premium KVM VPS - Seattle' }, 
+    { id: 427, name: '4C-6G-150GB', category: 'AS9929-CMIN2 Premium KVM VPS - Seattle' }, 
+    { id: 428, name: '5C-8G-200GB', category: 'AS9929-CMIN2 Premium KVM VPS - Seattle' }, 
+    { id: 429, name: '5C-10G-250GB', category: 'AS9929-CMIN2 Premium KVM VPS - Seattle' },
+	{ id: 430, name: '6C-16G-400GB', category: 'AS9929-CMIN2 Premium KVM VPS - Seattle' },
+	{ id: 431, name: '6C-20G-500GB', category: 'AS9929-CMIN2 Premium KVM VPS - Seattle' },
+	{ id: 432, name: '7C-24.5G-600GB', category: 'AS9929-CMIN2 Premium KVM VPS - Seattle' },
+	{ id: 433, name: '8C-32.7G-800GB', category: 'AS9929-CMIN2 Premium KVM VPS - Seattle' },
     
-    // 4837 分类
-    { id: 372, name: '4C-4G-100GB', category: '4837' }, 
-    { id: 374, name: '4C-6G-150GB', category: '4837' }, 
-    { id: 375, name: '5C-8G-200GB', category: '4837' }, 
-    { id: 376, name: '5C-10G-250GB', category: '4837' }, 
+    // 普通优化4837 分类
+    { id: 372, name: '4C-4G-100GB', category: 'China Optimised Premium KVM VPS - Seattle' }, 
+    { id: 374, name: '4C-6G-150GB', category: 'China Optimised Premium KVM VPS - Seattle' }, 
+    { id: 375, name: '5C-8G-200GB', category: 'China Optimised Premium KVM VPS - Seattle' }, 
+    { id: 376, name: '5C-10G-250GB', category: 'China Optimised Premium KVM VPS - Seattle' },
+	{ id: 377, name: '6C-16G-400GB', category: 'China Optimised Premium KVM VPS - Seattle' },
+	{ id: 391, name: '6C-20G-500GB', category: 'China Optimised Premium KVM VPS - Seattle' },
+	{ id: 392, name: '7C-24.5G-700GB', category: 'China Optimised Premium KVM VPS - Seattle' },
+	{ id: 393, name: '8C-32.7G-800GB', category: 'China Optimised Premium KVM VPS - Seattle' },
     
-    // 闪购分类
-    { id: 330, name: 'Xeon E3-1270 v3', category: '闪购' }, 
-    { id: 386, name: 'Ryzen 5 5600X 128GB', category: '闪购' }, 
+    // 普通优化4837 分类
+    { id: 341, name: '4C-4G-60GB', category: 'DDoS Protected SSD E5 KVM VPS - Seattle' }, 
+    { id: 342, name: '4C-6G-90GB', category: 'DDoS Protected SSD E5 KVM VPS - Seattle' }, 
+	{ id: 343, name: '5C-8G-120GB', category: 'DDoS Protected SSD E5 KVM VPS - Seattle' }, 
+	{ id: 345, name: '5C-10G-150GB', category: 'DDoS Protected SSD E5 KVM VPS - Seattle' }, 
+	{ id: 344, name: '6C-16G-240GB', category: 'DDoS Protected SSD E5 KVM VPS - Seattle' },
+	{ id: 346, name: '7C-20G-300GB', category: 'DDoS Protected SSD E5 KVM VPS - Seattle' },
+	{ id: 347, name: '8C-23.5G-450GB', category: 'DDoS Protected SSD E5 KVM VPS - Seattle' },
 ];
 
 let productsStatus = [];

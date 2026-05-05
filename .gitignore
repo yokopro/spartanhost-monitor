@@ -1,15 +1,23 @@
-# 忽略依赖包
+# 依赖
 node_modules/
 
-# 忽略配置文件（保护隐私）
+# 隐私与配置
 config.js
+.env
+.env.local
 
-# 忽略用户订阅数据
+# 数据文件
 subscribers.json
+data/*.json
 
-# 忽略日志文件
+# 日志
 *.log
+npm-debug.log*
 
-# 忽略系统临时文件
+# 操作系统
 .DS_Store
 Thumbs.db
+
+# 编辑器
+.vscode/
+.idea/
